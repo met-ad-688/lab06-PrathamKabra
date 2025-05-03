@@ -1,0 +1,190 @@
+---
+title: 'Module 04: Lab 01'
+subtitle: Visual Reporting and Storytelling
+author: Your Name
+number-sections: true
+date: '2024-11-21'
+date-modified: today
+date-format: long
+engine: jupyter
+categories:
+  - visualization
+  - plotly
+  - spark
+  - Visual Reporting
+  - Storytelling with Data
+  - Industry-Specific Visualization
+execute:
+  eval: true
+  echo: true
+jupyter: python3
+---
+
+
+# Objectives {.unnumbered}
+
+By the end of this lab, you will:
+1. Load and analyze the **Lightcast dataset** in **Spark DataFrame**.
+2. Create **five easy and three medium-complexity visualizations** using **Plotly**.
+3. Explore **salary distributions, employment trends, and job postings**.
+4. Analyze **skills in relation to NAICS/SOC/ONET codes and salaries**.
+5. Customize **colors, fonts, and styles** in all visualizations (**default themes result in a 2.5-point deduction**).
+6. Follow **best practices for reporting on data communication**.
+
+# Step 1: Load the Dataset {.unnumbered}
+
+```{python}
+import pandas as pd
+import plotly.express as px
+import plotly.io as pio
+pio.renderers.default = "vscode"
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col
+
+
+# Initialize Spark Session
+spark = SparkSession.builder.appName("LightcastData").getOrCreate()
+
+# Load Data
+df = spark.read.option("header", "true").option("inferSchema", "true").option("multiLine","true").option("escape", "\"").csv("./data/lightcast_job_postings.csv")
+
+# Show Schema and Sample Data
+df.printSchema()
+df.show(5)
+```
+
+# Salary Distribution by Employment Type
+- Identify salary trends across different employment types.
+- **Filter the dataset**
+  - Remove records where **salary is missing or zero**.
+- **Aggregate Data**
+  - Group by **employment type** and compute salary distribution.
+- **Visualize results**
+  - Create a **box plot** where:
+    - **X-axis** = `EMPLOYMENT_TYPE_NAME`
+    - **Y-axis** = `SALARY_FROM`
+  - Customize **colors, fonts, and styles** to avoid a **2.5-point deduction**.
+- **Explanation:** Write two sentences about what the graph reveals.
+
+
+```{python}
+# Your Code for 1st question here
+pdf = df.select("EMPLOYMENT_TYPE_NAME", "SALARY").toPandas()
+fig = px.box(pdf, x="EMPLOYMENT_TYPE_NAME", y="SALARY", title="Salary Distribution by Employment Type", color_discrete_sequence=["#636EFA"])
+fig.update_layout(font_family="Arial", title_font_size=16)
+fig.show()
+```
+
+# Salary Distribution by Industry
+- Compare salary variations across industries.
+- **Filter the dataset**
+  - Keep records where **salary is greater than zero**.
+- **Aggregate Data**
+  - Group by **NAICS industry codes**.
+- **Visualize results**
+  - Create a **box plot** where:
+    - **X-axis** = `NAICS2_NAME`
+    - **Y-axis** = `SALARY_FROM`
+  - Customize colors, fonts, and styles.
+- **Explanation:** Write two sentences about what the graph reveals.
+
+```{python}
+# Your code for 2nd question here
+```
+
+# Job Posting Trends Over Time
+- Analyze how job postings fluctuate over time.
+- **Aggregate Data**
+  - Count job postings per **posted date (`POSTED`)**.
+- **Visualize results**
+  - Create a **line chart** where:
+    - **X-axis** = `POSTED`
+    - **Y-axis** = `Number of Job Postings`
+  - Apply custom colors and font styles.
+- **Explanation:** Write two sentences about what the graph reveals.
+
+```{python}
+# Your code for 3rd question here
+```
+
+# Top 10 Job Titles by Count
+- Identify the most frequently posted job titles.
+- **Aggregate Data**
+  - Count the occurrences of each **job title (`TITLE_NAME`)**.
+  - Select the **top 10 most frequent titles**.
+- **Visualize results**
+  - Create a **bar chart** where:
+    - **X-axis** = `TITLE_NAME`
+    - **Y-axis** = `Job Count`
+  - Apply custom colors and font styles.
+- **Explanation:** Write two sentences about what the graph reveals.
+
+```{python}
+# Your code for 4th question here
+```
+
+# Remote vs On-Site Job Postings
+- Compare the proportion of remote and on-site job postings.
+- **Aggregate Data**
+  - Count job postings by **remote type (`REMOTE_TYPE_NAME`)**.
+- **Visualize results**
+  - Create a **pie chart** where:
+    - **Labels** = `REMOTE_TYPE_NAME`
+    - **Values** = `Job Count`
+  - Apply custom colors and font styles.
+- **Explanation:** Write two sentences about what the graph reveals.
+
+```{python}
+# Your code for 5th question here
+```
+
+# Skill Demand Analysis by Industry (Stacked Bar Chart)
+- Identify which skills are most in demand in various industries.
+- **Aggregate Data**
+  - Extract **skills** from job postings.
+  - Count occurrences of skills grouped by **NAICS industry codes**.
+- **Visualize results**
+  - Create a **stacked bar chart** where:
+    - **X-axis** = `Industry`
+    - **Y-axis** = `Skill Count`
+    - **Color** = `Skill`
+  - Apply custom colors and font styles.
+- **Explanation:** Write two sentences about what the graph reveals.
+
+```{python}
+# Your code for 6th question here
+```
+
+
+# Salary Analysis by ONET Occupation Type (Bubble Chart)
+- Analyze how salaries differ across ONET occupation types.
+- **Aggregate Data**
+  - Compute **median salary** for each occupation in the **ONET taxonomy**.
+- **Visualize results**
+  - Create a **bubble chart** where:
+    - **X-axis** = `ONET_NAME`
+    - **Y-axis** = `Median Salary`
+    - **Size** = Number of job postings
+  - Apply custom colors and font styles.
+- **Explanation:** Write two sentences about what the graph reveals.
+
+```{python}
+# Your code for 7th question here
+```
+
+# Career Pathway Trends (Sankey Diagram)
+- Visualize job transitions between different occupation levels.
+- **Aggregate Data**
+  - Identify career transitions between **SOC job classifications**.
+- **Visualize results**
+  - Create a **Sankey diagram** where:
+    - **Source** = `SOC_2021_2_NAME`
+    - **Target** = `SOC_2021_3_NAME`
+    - **Value** = Number of transitions
+  - Apply custom colors and font styles.
+- **Explanation:** Write two sentences about what the graph reveals.
+
+```{python}
+# Your code for 8th question here
+```
+

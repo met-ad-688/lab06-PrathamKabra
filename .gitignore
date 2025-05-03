@@ -173,3 +173,4 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 .venv
+quarto-1.7.29-linux-amd64.deb
